@@ -1,6 +1,6 @@
 return {
   {"nvim-lua/plenary.nvim"},
-  {"nvim-telescope/telescope.nvim", branch = '0.1.x',
+  {"nvim-telescope/telescope.nvim",
     config = function()
       local builtin =require("telescope.builtin")
 
