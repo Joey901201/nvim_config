@@ -1,5 +1,4 @@
-
-- navigate splits
+-- navigate splits
 vim.keymap.set("n", "<C-j>", "<C-w><C-j>")
 vim.keymap.set("n", "<C-k>", "<C-w><C-k>")
 vim.keymap.set("n", "<C-h>", "<C-w><C-h>")
@@ -9,3 +8,12 @@ vim.keymap.set("n", "<leader>x", "<cmd>.lua<CR>")
 vim.keymap.set("n", "<leader><leader>x", "<cmd>source %<CR>")
 
 vim.keymap.set("n", "-", "<cmd>edit %:h<CR>")
+
+vim.keymap.set("n", "<CR>", function()
+  if vim.opt.hlsearch:get() then
+    vim.cmd.nohl()
+    return ""
+  else
+    return "<CR>"
+  end
+end, { expr = true })
