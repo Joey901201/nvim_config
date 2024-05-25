@@ -5,6 +5,7 @@ M.setup = function()
 
   require("nvim-treesitter").setup {
     ensure_install = "community",
+    auto_install = true,
   }
 
   local syntax_on = {}

@@ -8,13 +8,16 @@ return {
       "WhoIsSethDaniel/mason-tool-installer.nvim",
 
       { "j-hui/fidget.nvim", opts = {} },
+
+      -- Autoformatting
+      "stevearc/conform.nvim",
     },
     config = function()
       require("neodev").setup {
-        library = {
-          plugins = { "nvim-dap-ui" },
-          types = true,
-        },
+        --    library = {
+        --    plugins = { "nvim-dap-ui" },
+        --    types = true,
+        --  },
       }
 
       local capabilities = nil
@@ -25,6 +28,7 @@ return {
       local lspconfig = require "lspconfig"
 
       local servers = {
+        bashls = true,
         lua_ls = true,
 
         clangd = {
@@ -46,7 +50,7 @@ return {
       local ensure_installed = {
         "stylua",
         "lua_ls",
-        "delve",
+        "clang-format",
       }
 
       vim.list_extend(ensure_installed, servers_to_install)
@@ -56,7 +60,6 @@ return {
         if config == true then
           config = {}
         end
-
         config = vim.tbl_deep_extend("force", {}, {
           capabilities = capabilities,
         }, config)
@@ -64,9 +67,7 @@ return {
         lspconfig[name].setup(config)
       end
 
-      local disable_semantic_tokens = {
-        lua = true,
-      }
+      local disable_semantic_tokens = {}
 
       vim.api.nvim_create_autocmd("LspAttach", {
         callback = function(args)
@@ -79,12 +80,31 @@ return {
           vim.keymap.set("n", "gD", vim.lsp.buf.declaration, { buffer = 0 })
           vim.keymap.set("n", "K", vim.lsp.buf.hover, { buffer = 0 })
 
-          vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename)
+          vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, { buffer = 0 })
+          vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, { buffer = 0 })
 
           local filetype = vim.bo[bufnr].filetype
           if disable_semantic_tokens[filetype] then
-            client.capabilities.server_capabilities.semanticTokensProvider = nil
+            client.server_capabilities.semanticTokensProvider = nil
           end
+        end,
+      })
+
+      -- Autoformatting Setup
+      require("conform").setup {
+        formatters_by_ft = {
+          lua = { "stylua" },
+          c = { "clang-format" },
+        },
+      }
+
+      vim.api.nvim_create_autocmd("BufWritePre", {
+        callback = function(args)
+          require("conform").format {
+            bufnr = args.buf,
+            lsp_fallback = true,
+            quiet = true,
+          }
         end,
       })
     end,
