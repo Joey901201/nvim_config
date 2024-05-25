@@ -14,6 +14,8 @@ return {
         callback = function(args)
           require("conform").format {
             bufnr = args.buf,
+            lsp_fallback = true,
+            quiet = true,
           }
         end,
       })
